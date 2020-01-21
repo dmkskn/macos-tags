@@ -1,4 +1,6 @@
 """A python libraty for working with macOS tags"""
+from __future__ import annotations
+
 import plistlib
 from typing import Any, List, NamedTuple, Optional, Sequence, Union
 
@@ -22,6 +24,15 @@ class Tag(NamedTuple):
         if self.color:
             return f"{self.name}\n{self.color}"
         return self.name
+
+    @classmethod
+    def create(self, tag: str) -> Tag:
+        """Create tag from string (like `"tag"` or `"tag\\n1"`)"""
+        if "\n" in tag:
+            name, color = tag.splitlines()
+            return Tag(name, int(color))
+        else:
+            return Tag(tag)
 
 
 def _get_tag_name(tag: Union[str, Tag]) -> str:
@@ -54,15 +65,7 @@ def count(tag: Union[str, Tag], *, onlyin: Optional[str] = None) -> int:
 
 def get_all(file: str) -> List[Tag]:
     """List the tags on the `file`."""
-    tags: List[Tag] = []
-    for tag in _get_raw_tags(file):
-        if "\n" in tag:
-            tag_name, tag_color = tag.splitlines()
-            tags.append(Tag(name=tag_name, color=int(tag_color)))
-        else:
-            tags.append(Tag(name=tag, color=None))
-
-    return tags
+    return [Tag.create(tag) for tag in _get_raw_tags(file)]
 
 
 def set_all(tags: Sequence[Union[str, Tag]], *, file: str) -> None:
