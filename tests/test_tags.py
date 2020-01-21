@@ -8,6 +8,16 @@ RAW_TAGS = ["tag1", "tag2\n5"]  # from plist
 CLEAN_TAGS = [tags.Tag(name="tag1", color=None), tags.Tag(name="tag2", color=5)]
 
 
+def test_create_tag_object_from_string():
+    assert tags.Tag.create("tag1") == tags.Tag("tag1", None)
+    assert tags.Tag.create("tag1\n1") == tags.Tag("tag1", 1)
+
+
+def test_str_in_tag_object():
+    assert str(tags.Tag("tag1", None)) == "tag1"
+    assert str(tags.Tag("tag1", 1)) == "tag1\n1"
+
+
 def test_get_tag_name_from_tag_object():
     assert tags._get_tag_name(tags.Tag("tag1")) == "tag1"
 
