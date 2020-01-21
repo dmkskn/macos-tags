@@ -21,6 +21,7 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.6"
+xattr = "^0.9.7"
 
 [tool.poetry.dev-dependencies]
 pylint = "^2.4"
