@@ -66,10 +66,12 @@ def get_all(file: str) -> List[Tag]:
 
 
 def set_all(tags: Sequence[Union[str, Tag]], *, file: str) -> None:
+    """Add `tags` to the `file` and remove the rest."""
     _remove_finder_info(file)
     plist = plistlib.dumps([str(tag) for tag in tags])  # type: ignore
     xattr.setxattr(file, _XATTR_TAGS, plist)
 
 
 def remove_all(file: str) -> None:
+    """Remove all tags from the `file`"""
     set_all([], file=file)
