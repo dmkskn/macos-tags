@@ -2,8 +2,9 @@
 from __future__ import annotations
 
 import plistlib
+from dataclasses import dataclass, field
 from enum import Enum, unique
-from typing import Any, List, NamedTuple, Optional, Sequence, Union
+from typing import Any, List, Optional, Sequence, Union
 
 import mdfind  # type: ignore
 import xattr  # type: ignore
@@ -26,26 +27,20 @@ class Color(Enum):
         return str(self.value)
 
 
-class Tag(NamedTuple):
-    """A named tuple that represents a single tag.
-
-    Usage: `Tag(name="tag-name", color=Color.BLUE)`.
-    """
+@dataclass(frozen=True)
+class Tag:
+    """Represents a single tag."""
 
     name: str
-    color: Optional[Color] = None
+    color: Optional[Color] = field(default=None, compare=False)
 
     def __str__(self) -> str:
         if self.color:
             return f"{self.name}\n{self.color}"
         return self.name
 
-    def __eq__(self, other) -> bool:
-        """Two tags are equal if they have the same name."""
-        return type(self) is type(other) and self.name == other.name
-
     @classmethod
-    def create(self, tag: str) -> Tag:
+    def from_string(self, tag: str) -> Tag:
         """Create tag from string (like `"tag"` or `"tag\\n1"`)"""
         if "\n" in tag:
             name, color = tag.splitlines()
@@ -85,7 +80,7 @@ def count(tag: Union[str, Tag], *, onlyin: Optional[str] = None) -> int:
 
 def get_all(file: str) -> List[Tag]:
     """List the tags on the `file`."""
-    return [Tag.create(tag) for tag in _get_raw_tags(file)]
+    return [Tag.from_string(tag) for tag in _get_raw_tags(file)]
 
 
 def set_all(tags: Sequence[Union[str, Tag]], *, file: str) -> None:
@@ -102,7 +97,7 @@ def remove_all(file: str) -> None:
 
 def add(tag: Union[str, Tag], *, file: str) -> None:
     """Add `tag` to `file`."""
-    tag = Tag.create(tag) if isinstance(tag, str) else tag
+    tag = Tag.from_string(tag) if isinstance(tag, str) else tag
     tags = get_all(file)
     if tag not in tags:
         tags.append(tag)
@@ -111,7 +106,7 @@ def add(tag: Union[str, Tag], *, file: str) -> None:
 
 def remove(tag: Union[str, Tag], *, file: str) -> None:
     """Remove `tag` from `file`."""
-    tag = Tag.create(tag) if isinstance(tag, str) else tag
+    tag = Tag.from_string(tag) if isinstance(tag, str) else tag
     tags = get_all(file)
     if tag in tags:
         tags.pop(tags.index(tag))

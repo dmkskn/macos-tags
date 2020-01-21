@@ -13,8 +13,8 @@ def test_color_str_method():
 
 
 def test_create_tag_object_from_string():
-    assert tags.Tag.create("tag1") == tags.Tag("tag1", None)
-    assert tags.Tag.create("tag1\n1") == tags.Tag("tag1", 1)
+    assert tags.Tag.from_string("tag1") == tags.Tag("tag1", None)
+    assert tags.Tag.from_string("tag1\n1") == tags.Tag("tag1", 1)
 
 
 def test_str_in_tag_object():
@@ -175,7 +175,7 @@ def test_add_do_nothing_if_there_is_a_tag_on_file_with_the_same_name(set_all, ge
 @patch("tags.set_all")
 def test_remove_tag_string(set_all, get_all):
     tag, *rest = RAW_TAGS
-    rest = [tags.Tag.create(t) for t in rest]
+    rest = [tags.Tag.from_string(t) for t in rest]
     tags.remove(tag, file="/path")
     assert set_all.call_args == call(rest, file="/path")
 
