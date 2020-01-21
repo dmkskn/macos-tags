@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import plistlib
+from enum import Enum, unique
 from typing import Any, List, NamedTuple, Optional, Sequence, Union
 
 import mdfind  # type: ignore
@@ -11,14 +12,28 @@ _XATTR_TAGS = "com.apple.metadata:_kMDItemUserTags"
 _XATTR_FINDER_INFO = "com.apple.FinderInfo"
 
 
+@unique
+class Color(Enum):
+    GRAY = 1
+    GREEN = 2
+    PURPLE = 3
+    BLUE = 4
+    YELLOW = 5
+    RED = 6
+    ORANGE = 7
+
+    def __str__(self) -> str:
+        return str(self.value)
+
+
 class Tag(NamedTuple):
     """A named tuple that represents a single tag.
 
-    Usage: `Tag(name="tag-name", color=tags.BLUE)`.
+    Usage: `Tag(name="tag-name", color=Color.BLUE)`.
     """
 
     name: str
-    color: Optional[int] = None
+    color: Optional[Color] = None
 
     def __str__(self) -> str:
         if self.color:
@@ -34,7 +49,7 @@ class Tag(NamedTuple):
         """Create tag from string (like `"tag"` or `"tag\\n1"`)"""
         if "\n" in tag:
             name, color = tag.splitlines()
-            return Tag(name, int(color))
+            return Tag(name, Color(int(color)))
         else:
             return Tag(tag)
 
@@ -44,6 +59,7 @@ def _get_tag_name(tag: Union[str, Tag]) -> str:
 
 
 def _get_raw_tags(file: str) -> List[str]:
+    # Like ["tag-one\n4", "tag-two\n6", tag-three"]
     plist = xattr.getxattr(file, _XATTR_TAGS)
     return plistlib.loads(plist)
 
