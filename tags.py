@@ -9,6 +9,19 @@ from typing import Any, List, Optional, Sequence, Union
 import mdfind  # type: ignore
 import xattr  # type: ignore
 
+__all__ = [
+    "Color",
+    "Tag",
+    "find",
+    "count",
+    "get_all",
+    "set_all",
+    "remove_all",
+    "add",
+    "remove",
+]
+
+
 _XATTR_TAGS = "com.apple.metadata:_kMDItemUserTags"
 _XATTR_FINDER_INFO = "com.apple.FinderInfo"
 
