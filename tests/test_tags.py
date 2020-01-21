@@ -27,16 +27,10 @@ def test_eq_in_tag_object():
     assert tags.Tag("tag1", None) != tags.Tag("tag2", 1)
 
 
-def test_get_tag_name_from_tag_object():
-    assert tags._get_tag_name(tags.Tag("tag1")) == "tag1"
-
-
-def test_get_tag_name_from_string():
-    assert tags._get_tag_name("tag1") == "tag1"
-
-
-def test_get_tag_name_from_string_with_color_mark():
-    assert tags._get_tag_name("tag1\n1") == "tag1"
+def test_create_tag():
+    assert tags._create_tag(tags.Tag("tag1")) == tags.Tag("tag1")
+    assert tags._create_tag("tag1") == tags.Tag("tag1")
+    assert tags._create_tag("tag1\n1") == tags.Tag("tag1", tags.Color(1))
 
 
 @patch("mdfind.query")

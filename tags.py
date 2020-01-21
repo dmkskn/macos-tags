@@ -52,8 +52,8 @@ class Tag:
 AnyTag = Union[str, Tag]
 
 
-def _get_tag_name(tag: AnyTag) -> str:
-    return tag.splitlines()[0] if isinstance(tag, str) else tag.name
+def _create_tag(tag: AnyTag) -> Tag:
+    return Tag.from_string(tag) if isinstance(tag, str) else tag
 
 
 def _get_raw_tags(file: str) -> List[str]:
@@ -71,14 +71,14 @@ def _remove_finder_info(file: str) -> None:
 
 def find(tag: AnyTag, *, onlyin: Optional[str] = None) -> List[str]:
     """Find files by `tag`."""
-    tag_name = _get_tag_name(tag)
-    return mdfind.query(query=f"kMDItemUserTags=={tag_name}", onlyin=onlyin)
+    tag = _create_tag(tag)
+    return mdfind.query(query=f"kMDItemUserTags=={tag.name}", onlyin=onlyin)
 
 
 def count(tag: AnyTag, *, onlyin: Optional[str] = None) -> int:
     """Output the total number of files by `tag`."""
-    tag_name = _get_tag_name(tag)
-    return mdfind.count(query=f"kMDItemUserTags=={tag_name}", onlyin=onlyin)
+    tag = _create_tag(tag)
+    return mdfind.count(query=f"kMDItemUserTags=={tag.name}", onlyin=onlyin)
 
 
 def get_all(file: str) -> List[Tag]:
@@ -100,7 +100,7 @@ def remove_all(file: str) -> None:
 
 def add(tag: AnyTag, *, file: str) -> None:
     """Add `tag` to `file`."""
-    tag = Tag.from_string(tag) if isinstance(tag, str) else tag
+    tag = _create_tag(tag)
     tags = get_all(file)
     if tag not in tags:
         tags.append(tag)
@@ -109,7 +109,7 @@ def add(tag: AnyTag, *, file: str) -> None:
 
 def remove(tag: AnyTag, *, file: str) -> None:
     """Remove `tag` from `file`."""
-    tag = Tag.from_string(tag) if isinstance(tag, str) else tag
+    tag = _create_tag(tag)
     tags = get_all(file)
     if tag in tags:
         tags.pop(tags.index(tag))
