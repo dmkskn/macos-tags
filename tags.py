@@ -49,7 +49,10 @@ class Tag:
             return Tag(tag)
 
 
-def _get_tag_name(tag: Union[str, Tag]) -> str:
+AnyTag = Union[str, Tag]
+
+
+def _get_tag_name(tag: AnyTag) -> str:
     return tag.splitlines()[0] if isinstance(tag, str) else tag.name
 
 
@@ -66,13 +69,13 @@ def _remove_finder_info(file: str) -> None:
         xattr.removexattr(file, _XATTR_FINDER_INFO)
 
 
-def find(tag: Union[str, Tag], *, onlyin: Optional[str] = None) -> List[str]:
+def find(tag: AnyTag, *, onlyin: Optional[str] = None) -> List[str]:
     """Find files by `tag`."""
     tag_name = _get_tag_name(tag)
     return mdfind.query(query=f"kMDItemUserTags=={tag_name}", onlyin=onlyin)
 
 
-def count(tag: Union[str, Tag], *, onlyin: Optional[str] = None) -> int:
+def count(tag: AnyTag, *, onlyin: Optional[str] = None) -> int:
     """Output the total number of files by `tag`."""
     tag_name = _get_tag_name(tag)
     return mdfind.count(query=f"kMDItemUserTags=={tag_name}", onlyin=onlyin)
@@ -83,7 +86,7 @@ def get_all(file: str) -> List[Tag]:
     return [Tag.from_string(tag) for tag in _get_raw_tags(file)]
 
 
-def set_all(tags: Sequence[Union[str, Tag]], *, file: str) -> None:
+def set_all(tags: Sequence[AnyTag], *, file: str) -> None:
     """Add `tags` to the `file` and remove the rest."""
     _remove_finder_info(file)
     plist = plistlib.dumps([str(tag) for tag in tags])  # type: ignore
@@ -95,7 +98,7 @@ def remove_all(file: str) -> None:
     set_all([], file=file)
 
 
-def add(tag: Union[str, Tag], *, file: str) -> None:
+def add(tag: AnyTag, *, file: str) -> None:
     """Add `tag` to `file`."""
     tag = Tag.from_string(tag) if isinstance(tag, str) else tag
     tags = get_all(file)
@@ -104,7 +107,7 @@ def add(tag: Union[str, Tag], *, file: str) -> None:
         set_all(tags, file=file)
 
 
-def remove(tag: Union[str, Tag], *, file: str) -> None:
+def remove(tag: AnyTag, *, file: str) -> None:
     """Remove `tag` from `file`."""
     tag = Tag.from_string(tag) if isinstance(tag, str) else tag
     tags = get_all(file)
