@@ -117,3 +117,10 @@ def test_set_all_with_raw_tag_strings(setxattr, _remove_finder_info):
     assert setxattr.call_args == call(
         "/path", "com.apple.metadata:_kMDItemUserTags", CLEAN_PLIST
     )
+
+
+@patch("tags.set_all")
+def test_remove_all(set_all):
+    tags.remove_all("/path")
+    assert set_all.called
+    assert set_all.call_args == call([], file="/path")
