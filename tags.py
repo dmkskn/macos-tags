@@ -91,3 +91,12 @@ def add(tag: Union[str, Tag], *, file: str) -> None:
     if tag not in tags:
         tags.append(tag)
         set_all(tags, file=file)
+
+
+def remove(tag: Union[str, Tag], *, file: str) -> None:
+    """Remove `tag` from `file`."""
+    tag = Tag.create(tag) if isinstance(tag, str) else tag
+    tags = get_all(file)
+    if tag in tags:
+        tags.pop(tags.index(tag))
+        set_all(tags, file=file)

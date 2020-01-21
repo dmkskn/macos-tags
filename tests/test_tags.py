@@ -165,3 +165,20 @@ def test_add_do_nothing_if_there_is_a_tag_on_file_with_the_same_name(set_all, ge
     new_tag = tags.Tag("tag1", 1)
     tags.add(new_tag, file="/path")
     assert set_all.called is False
+
+
+@patch("tags.get_all", return_value=CLEAN_TAGS.copy())
+@patch("tags.set_all")
+def test_remove_tag_string(set_all, get_all):
+    tag, *rest = RAW_TAGS
+    rest = [tags.Tag.create(t) for t in rest]
+    tags.remove(tag, file="/path")
+    assert set_all.call_args == call(rest, file="/path")
+
+
+@patch("tags.get_all", return_value=CLEAN_TAGS.copy())
+@patch("tags.set_all")
+def test_remove_tag_object(set_all, get_all):
+    tag, *rest = CLEAN_TAGS
+    tags.remove(tag, file="/path")
+    assert set_all.call_args == call(rest, file="/path")
