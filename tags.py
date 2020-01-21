@@ -24,6 +24,7 @@ __all__ = [
 
 _XATTR_TAGS = "com.apple.metadata:_kMDItemUserTags"
 _XATTR_FINDER_INFO = "com.apple.FinderInfo"
+_MDFIND_TAGS_QUERY = "kMDItemUserTags=={}"
 
 
 @unique
@@ -85,13 +86,13 @@ def _remove_finder_info(file: str) -> None:
 def find(tag: AnyTag, *, onlyin: Optional[str] = None) -> List[str]:
     """Find files by `tag`."""
     tag = _create_tag(tag)
-    return mdfind.query(query=f"kMDItemUserTags=={tag.name}", onlyin=onlyin)
+    return mdfind.query(query=_MDFIND_TAGS_QUERY.format(tag.name), onlyin=onlyin)
 
 
 def count(tag: AnyTag, *, onlyin: Optional[str] = None) -> int:
     """Output the total number of files by `tag`."""
     tag = _create_tag(tag)
-    return mdfind.count(query=f"kMDItemUserTags=={tag.name}", onlyin=onlyin)
+    return mdfind.count(query=_MDFIND_TAGS_QUERY.format(tag.name), onlyin=onlyin)
 
 
 def get_all(file: str) -> List[Tag]:
