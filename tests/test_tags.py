@@ -3,6 +3,7 @@ from unittest.mock import call, patch
 import tags
 
 RAW_PLIST = b"bplist00\xa2\x01\x02Ttag1Vtag2\n5\x08\x0b\x10\x00\x00\x00\x00\x00\x00\x01\x01\x00\x00\x00\x00\x00\x00\x00\x03\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x17"
+CLEAN_PLIST = b'<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n<plist version="1.0">\n<array>\n\t<string>tag1</string>\n\t<string>tag2\n5</string>\n</array>\n</plist>\n'
 RAW_TAGS = ["tag1", "tag2\n5"]  # from plist
 CLEAN_TAGS = [tags.Tag(name="tag1", color=None), tags.Tag(name="tag2", color=5)]
 
@@ -73,3 +74,46 @@ def test_get_all(_get_raw_tags):
     result = tags.get_all("/path")
     assert _get_raw_tags.called
     assert result == CLEAN_TAGS
+
+
+@patch("xattr.removexattr")
+@patch("xattr.listxattr", return_value=["com.apple.FinderInfo"])
+def test_remove_finder_info(listxattr, removexattr):
+    tags._remove_finder_info("/path")
+    assert listxattr.called
+    assert listxattr.call_args == call("/path")
+    assert removexattr.called
+    assert removexattr.call_args == call("/path", "com.apple.FinderInfo")
+
+
+@patch("xattr.removexattr")
+@patch("xattr.listxattr", return_value=[])
+def test_remove_finder_info_if_there_is_no_finder_info(listxattr, removexattr):
+    tags._remove_finder_info("/path")
+    assert listxattr.called
+    assert listxattr.call_args == call("/path")
+    assert removexattr.called is False
+
+
+@patch("tags._remove_finder_info")
+@patch("xattr.setxattr")
+def test_set_all_with_tag_objects(setxattr, _remove_finder_info):
+    tags.set_all(CLEAN_TAGS, file="/path")
+    assert _remove_finder_info.called
+    assert _remove_finder_info.call_args == call("/path")
+    assert setxattr.called
+    assert setxattr.call_args == call(
+        "/path", "com.apple.metadata:_kMDItemUserTags", CLEAN_PLIST
+    )
+
+
+@patch("tags._remove_finder_info")
+@patch("xattr.setxattr")
+def test_set_all_with_raw_tag_strings(setxattr, _remove_finder_info):
+    tags.set_all(RAW_TAGS, file="/path")
+    assert _remove_finder_info.called
+    assert _remove_finder_info.call_args == call("/path")
+    assert setxattr.called
+    assert setxattr.call_args == call(
+        "/path", "com.apple.metadata:_kMDItemUserTags", CLEAN_PLIST
+    )

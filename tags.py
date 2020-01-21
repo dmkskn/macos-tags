@@ -1,11 +1,12 @@
 """A python libraty for working with macOS tags"""
 import plistlib
-from typing import Any, List, NamedTuple, Optional, Union
+from typing import Any, List, NamedTuple, Optional, Sequence, Union
 
 import mdfind  # type: ignore
 import xattr  # type: ignore
 
 _XATTR_TAGS = "com.apple.metadata:_kMDItemUserTags"
+_XATTR_FINDER_INFO = "com.apple.FinderInfo"
 
 
 class Tag(NamedTuple):
@@ -17,6 +18,11 @@ class Tag(NamedTuple):
     name: str
     color: Optional[int] = None
 
+    def __str__(self) -> str:
+        if self.color:
+            return f"{self.name}\n{self.color}"
+        return self.name
+
 
 def _get_tag_name(tag: Union[str, Tag]) -> str:
     return tag.splitlines()[0] if isinstance(tag, str) else tag.name
@@ -25,6 +31,13 @@ def _get_tag_name(tag: Union[str, Tag]) -> str:
 def _get_raw_tags(file: str) -> List[str]:
     plist = xattr.getxattr(file, _XATTR_TAGS)
     return plistlib.loads(plist)
+
+
+def _remove_finder_info(file: str) -> None:
+    # If you don't delete the com.apple.FinderInfo extended attributes,
+    # Finder keeps showing the color labels for tags with colors.
+    if _XATTR_FINDER_INFO in xattr.listxattr(file):
+        xattr.removexattr(file, _XATTR_FINDER_INFO)
 
 
 def find(tag: Union[str, Tag], *, onlyin: Optional[str] = None) -> List[str]:
@@ -50,3 +63,9 @@ def get_all(file: str) -> List[Tag]:
             tags.append(Tag(name=tag, color=None))
 
     return tags
+
+
+def set_all(tags: Sequence[Union[str, Tag]], *, file: str) -> None:
+    _remove_finder_info(file)
+    plist = plistlib.dumps([str(tag) for tag in tags])  # type: ignore
+    xattr.setxattr(file, _XATTR_TAGS, plist)
