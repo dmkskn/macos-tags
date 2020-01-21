@@ -25,6 +25,10 @@ class Tag(NamedTuple):
             return f"{self.name}\n{self.color}"
         return self.name
 
+    def __eq__(self, other) -> bool:
+        """Two tags are equal if they have the same name."""
+        return type(self) is type(other) and self.name == other.name
+
     @classmethod
     def create(self, tag: str) -> Tag:
         """Create tag from string (like `"tag"` or `"tag\\n1"`)"""
@@ -76,5 +80,14 @@ def set_all(tags: Sequence[Union[str, Tag]], *, file: str) -> None:
 
 
 def remove_all(file: str) -> None:
-    """Remove all tags from the `file`"""
+    """Remove all tags from the `file`."""
     set_all([], file=file)
+
+
+def add(tag: Union[str, Tag], *, file: str) -> None:
+    """Add `tag` to `file`."""
+    tag = Tag.create(tag) if isinstance(tag, str) else tag
+    tags = get_all(file)
+    if tag not in tags:
+        tags.append(tag)
+        set_all(tags, file=file)

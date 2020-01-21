@@ -18,6 +18,11 @@ def test_str_in_tag_object():
     assert str(tags.Tag("tag1", 1)) == "tag1\n1"
 
 
+def test_eq_in_tag_object():
+    assert tags.Tag("tag1", None) == tags.Tag("tag1", 1)
+    assert tags.Tag("tag1", None) != tags.Tag("tag2", 1)
+
+
 def test_get_tag_name_from_tag_object():
     assert tags._get_tag_name(tags.Tag("tag1")) == "tag1"
 
@@ -134,3 +139,29 @@ def test_remove_all(set_all):
     tags.remove_all("/path")
     assert set_all.called
     assert set_all.call_args == call([], file="/path")
+
+
+@patch("tags.get_all", return_value=CLEAN_TAGS.copy())
+@patch("tags.set_all")
+def test_add_tag_from_string(set_all, get_all):
+    new_tag_name, new_tag_color = "new-tag", 1
+    tags.add(f"{new_tag_name}\n{new_tag_color}", file="/path")
+    all_tags = CLEAN_TAGS + [tags.Tag(new_tag_name, new_tag_color)]
+    assert set_all.call_args == call(all_tags, file="/path")
+
+
+@patch("tags.get_all", return_value=CLEAN_TAGS.copy())
+@patch("tags.set_all")
+def test_add_tag_from_tag_object(set_all, get_all):
+    new_tag = tags.Tag("new-tag", 1)
+    tags.add(new_tag, file="/path")
+    all_tags = CLEAN_TAGS + [new_tag]
+    assert set_all.call_args == call(all_tags, file="/path")
+
+
+@patch("tags.get_all", return_value=CLEAN_TAGS.copy())
+@patch("tags.set_all")
+def test_add_do_nothing_if_there_is_a_tag_on_file_with_the_same_name(set_all, get_all):
+    new_tag = tags.Tag("tag1", 1)
+    tags.add(new_tag, file="/path")
+    assert set_all.called is False
