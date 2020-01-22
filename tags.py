@@ -2,12 +2,23 @@
 from __future__ import annotations
 
 import plistlib
+import sys
 from dataclasses import dataclass, field
 from enum import Enum, unique
 from typing import Any, List, Optional, Sequence, Union
 
 import mdfind  # type: ignore
 import xattr  # type: ignore
+
+
+def _test_os() -> None:
+    """Raise an error if it's not MacOS."""
+    if sys.platform != "darwin":
+        raise RuntimeError(f"The library works only on macOS.")
+
+
+_test_os()
+
 
 __all__ = [
     "Color",
