@@ -5,3 +5,19 @@ repos:
       - id: trailing-whitespace
       - id: check-toml
       - id: debug-statements
+
+  - repo: local
+    hooks:
+      - id: format
+        name: format
+        stages: [commit]
+        language: system
+        entry: make format
+        types: [python]
+
+      - id: test
+        name: test
+        stages: [commit]
+        language: system
+        entry: make test
+        types: [python]

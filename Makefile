@@ -14,6 +14,7 @@ mypy:
 
 test:
 	poetry run pytest --exitfirst tests/
+	poetry run pytest --cov --cov-fail-under=100
 
 format:
 	poetry run black tags.py tests
