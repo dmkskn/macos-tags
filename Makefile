@@ -10,14 +10,14 @@ pre-commit:
 	poetry run pre-commit install
 
 mypy:
-	poetry run mypy tags.py
+	poetry run mypy macos_tags.py
 
 test:
 	poetry run pytest --exitfirst tests/
 	poetry run pytest --cov --cov-fail-under=100
 
 format:
-	poetry run black tags.py tests
+	poetry run black macos_tags.py tests
 	poetry run isort -y
 
 clean:
@@ -35,7 +35,7 @@ clean:
 	rm -fr .mypy_cache
 
 ci:
-	poetry run black --check tags.py tests/
-	poetry run mypy tags.py
+	poetry run black --check macos_tags.py tests/
+	poetry run mypy macos_tags.py
 	poetry run pytest --exitfirst tests/
 	poetry run pytest --cov --cov-fail-under=100

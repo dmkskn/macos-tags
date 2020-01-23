@@ -1,12 +1,13 @@
 [tool.poetry]
-name = "tags"
+name = "macos-tags"
 version = "0.1.0"
 description = "A python libraty for working with macOS tags"
 authors = ["Dima Koskin <dmksknn@gmail.com>"]
 license = "MIT"
+readme = 'README.md'
 
-homepage = "https://github.com/dmkskn/tags"
-repository = "https://github.com/dmkskn/tags"
+homepage = "https://github.com/dmkskn/macos-tags"
+repository = "https://github.com/dmkskn/macos-tags"
 
 keywords = ["macos", "tags"]
 
@@ -22,6 +23,7 @@ classifiers = [
 [tool.poetry.dependencies]
 python = "^3.6"
 xattr = "^0.9.7"
+mdfind = "^2019.4.13"
 
 [tool.poetry.dev-dependencies]
 pylint = "^2.4"
