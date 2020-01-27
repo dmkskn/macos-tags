@@ -6,6 +6,9 @@ install:
 update:
 	poetry update
 
+build:
+	poetry build
+
 pre-commit:
 	poetry run pre-commit install
 
