@@ -1,5 +1,9 @@
 # `macos-tags`
 
+![Release](https://github.com/dmkskn/macos-tags/workflows/Release/badge.svg)
+[![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
+
+
 A python library for working with macOS tags.
 
 ## Installation
