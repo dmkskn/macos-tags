@@ -7,20 +7,19 @@ on:
 
 jobs:
   test:
-    name: Test on Python ${{ matrix.python-version }} and ${{ matrix.os }}
+    name: Test on Python 3.7 and ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
-      max-parallel: 4
+      max-parallel: 2
       matrix:
         os: [macOS-10.14, macOS-latest]
-        python-version: [3.6, 3.7]
 
     steps:
       - uses: actions/checkout@v1
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: Set up Python 3.7
         uses: actions/setup-python@v1
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.7"
       - name: Install
         run: |
           python -m pip install --upgrade pip
