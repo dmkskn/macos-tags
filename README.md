@@ -10,11 +10,19 @@ pip install macos-tags
 
 ## Tutorial & Usage
 
-Get files by tag name:
+Get all tags:
 
 ```python
 >>> import macos_tags
 
+
+>>> macos_tags.tags()
+[Tag(name='design', color=None), ..., Tag(name='python', color=<Color.GREEN: 2>]
+```
+
+Get files by tag name:
+
+```python
 >>> macos_tags.find("design")
 ['/Users/home/apple.jpg', '/Users/home/WEB_POSTERS.png']
 ```
