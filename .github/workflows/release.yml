@@ -7,12 +7,8 @@ on:
 
 jobs:
   test:
-    name: Test on Python 3.7 and ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      max-parallel: 2
-      matrix:
-        os: [macOS-10.14, macOS-latest]
+    name: Test on Python 3.7 and macOS-latest
+    runs-on: "macos-latest"
 
     steps:
       - uses: actions/checkout@v1
@@ -32,7 +28,7 @@ jobs:
   release:
     name: Release
     needs: [test]
-    runs-on: ubuntu-latest
+    runs-on: "macos-latest"
 
     steps:
       - uses: actions/checkout@v1
