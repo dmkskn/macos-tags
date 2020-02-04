@@ -1,4 +1,4 @@
-from unittest.mock import call, patch
+from unittest.mock import call, mock_open, patch
 
 import pytest
 
@@ -11,6 +11,18 @@ CLEAN_TAGS = [
     macos_tags.Tag(name="tag1", color=None),
     macos_tags.Tag(name="tag2", color=5),
 ]
+_ALL_TAGS_PLIST = {
+    "values": {
+        "FinderTagDict": {
+            "value": {
+                "FinderTags": [
+                    {"n": "tag1", "v": False, "p": True},
+                    {"n": "tag2", "v": False, "p": True, "l": 5},
+                ]
+            }
+        }
+    }
+}
 
 
 @patch("sys.platform", return_value="linux")
@@ -193,3 +205,10 @@ def test_remove_tag_object(set_all, get_all):
     tag, *rest = CLEAN_TAGS
     macos_tags.remove(tag, file="/path")
     assert set_all.call_args == call(rest, file="/path")
+
+
+@patch("plistlib.load", return_value=_ALL_TAGS_PLIST)
+def test_tags(plistlib_load_mock):
+    tags = macos_tags.tags()
+    assert plistlib_load_mock.called_with(_ALL_TAGS_PLIST)
+    assert tags == CLEAN_TAGS
