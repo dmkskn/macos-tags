@@ -101,3 +101,5 @@ Change all tags in the file:
 >>> macos_tags.get_all(path)
 [Tag(name="book", color=None), Tag("programming", <Color.BLUE: 4>]
 ```
+
+❤️
