@@ -5,7 +5,8 @@ import plistlib
 import sys
 from dataclasses import dataclass, field
 from enum import Enum, unique
-from typing import Any, List, Optional, Sequence, Union
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Sequence, Union
 
 import mdfind  # type: ignore
 import xattr  # type: ignore
@@ -36,6 +37,7 @@ __all__ = [
 _XATTR_TAGS = "com.apple.metadata:_kMDItemUserTags"
 _XATTR_FINDER_INFO = "com.apple.FinderInfo"
 _MDFIND_TAGS_QUERY = "kMDItemUserTags=={}"
+_ALL_TAGS_PLIST_PATH = f"{Path.home()}/Library/SyncedPreferences/com.apple.finder.plist"
 
 
 @unique
@@ -139,3 +141,14 @@ def remove(tag: AnyTag, *, file: str) -> None:
     if tag in tags:
         tags.pop(tags.index(tag))
         set_all(tags, file=file)
+
+
+def tags() -> List[Tag]:
+    """Get all tags."""
+    with open(_ALL_TAGS_PLIST_PATH, "rb") as fp:
+        data: Dict["str", Any] = plistlib.load(fp)
+        result = []
+        for tag in data["values"]["FinderTagDict"]["value"]["FinderTags"]:
+            color = None if tag.get("l") is None else Color(tag["l"])
+            result.append(Tag(tag["n"], color))
+        return result
