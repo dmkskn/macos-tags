@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "macos-tags"
-version = "1.3.0"
+version = "1.4.0"
 description = "A python libraty for working with macOS tags"
 authors = ["Dima Koskin <dmksknn@gmail.com>"]
 license = "MIT"
