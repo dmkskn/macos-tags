@@ -1,10 +1,7 @@
-# `macos-tags`
+# Use tags to organize files on Mac from Python
 
 ![Release](https://github.com/dmkskn/macos-tags/workflows/Release/badge.svg)
 [![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
-
-
-A python library for working with macOS tags.
 
 ## Installation
 
@@ -12,7 +9,9 @@ A python library for working with macOS tags.
 pip install macos-tags
 ```
 
-## Tutorial & Usage
+Works since Python 3.7.
+
+## Tutorial
 
 Get all tags:
 
