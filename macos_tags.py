@@ -85,7 +85,11 @@ def _create_tag(tag: AnyTag) -> Tag:
 
 def _get_raw_tags(file: str) -> List[str]:
     # Like ["tag-one\n4", "tag-two\n6", tag-three"]
-    plist = xattr.getxattr(file, _XATTR_TAGS)
+    try:
+        plist = xattr.getxattr(file, _XATTR_TAGS)
+    except OSError:
+        # There is no _XATTR_TAGS attribute
+        return []
     return plistlib.loads(plist)
 
 
