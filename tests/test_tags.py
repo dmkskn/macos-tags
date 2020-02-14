@@ -107,6 +107,13 @@ def test_get_raw_tags(getxattr):
     assert result == RAW_TAGS
 
 
+@patch("xattr.getxattr", side_effect=OSError())
+def test_get_raw_tags_returns_empty_list_for_new_files(getxattr):
+    result = macos_tags._get_raw_tags("/path")
+    assert getxattr.called
+    assert result == []
+
+
 @patch("macos_tags._get_raw_tags", return_value=RAW_TAGS)
 def test_get_all(_get_raw_tags):
     result = macos_tags.get_all("/path")
