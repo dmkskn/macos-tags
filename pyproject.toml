@@ -6,7 +6,7 @@ authors = ["Dima Koskin <dmksknn@gmail.com>"]
 license = "MIT"
 readme = 'README.md'
 
-homepage = "https://github.com/dmkskn/macos-tags"
+homepage = "https://macos-tags.dmkskn.com"
 repository = "https://github.com/dmkskn/macos-tags"
 
 keywords = ["macos", "tags"]
