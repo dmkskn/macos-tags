@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "macos-tags"
-version = "1.4.4"
+version = "1.5.0"
 description = "Use tags to organize files on Mac from Python"
 authors = ["Dima Koskin <dmksknn@gmail.com>"]
 license = "MIT"
