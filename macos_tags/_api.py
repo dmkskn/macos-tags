@@ -1,4 +1,3 @@
-"""A python libraty for working with macOS tags"""
 from __future__ import annotations
 
 import plistlib
@@ -11,16 +10,6 @@ from typing import Any, Dict, List, Optional, Sequence, Union
 import mdfind
 import xattr  # type: ignore
 
-
-def _test_os() -> None:
-    """Raise an error if it's not MacOS."""
-    if sys.platform != "darwin":
-        raise RuntimeError(f"The library works only on macOS.")
-
-
-_test_os()
-
-
 __all__ = [
     "Color",
     "Tag",
@@ -31,6 +20,7 @@ __all__ = [
     "remove_all",
     "add",
     "remove",
+    "tags",
 ]
 
 
