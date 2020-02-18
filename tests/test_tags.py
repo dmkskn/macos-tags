@@ -51,9 +51,9 @@ def test_eq_in_tag_object():
 
 
 def test_create_tag():
-    assert macos_tags._create_tag(macos_tags.Tag("tag1")) == macos_tags.Tag("tag1")
-    assert macos_tags._create_tag("tag1") == macos_tags.Tag("tag1")
-    assert macos_tags._create_tag("tag1\n1") == macos_tags.Tag(
+    assert macos_tags._api._create_tag(macos_tags.Tag("tag1")) == macos_tags.Tag("tag1")
+    assert macos_tags._api._create_tag("tag1") == macos_tags.Tag("tag1")
+    assert macos_tags._api._create_tag("tag1\n1") == macos_tags.Tag(
         "tag1", macos_tags.Color(1)
     )
 
@@ -102,19 +102,19 @@ def test_count_works_with_string_with_color_mark(count):
 
 @patch("xattr.getxattr", return_value=RAW_PLIST)
 def test_get_raw_tags(getxattr):
-    result = macos_tags._get_raw_tags("/path")
+    result = macos_tags._api._get_raw_tags("/path")
     assert getxattr.called
     assert result == RAW_TAGS
 
 
 @patch("xattr.getxattr", side_effect=OSError())
 def test_get_raw_tags_returns_empty_list_for_new_files(getxattr):
-    result = macos_tags._get_raw_tags("/path")
+    result = macos_tags._api._get_raw_tags("/path")
     assert getxattr.called
     assert result == []
 
 
-@patch("macos_tags._get_raw_tags", return_value=RAW_TAGS)
+@patch("macos_tags._api._get_raw_tags", return_value=RAW_TAGS)
 def test_get_all(_get_raw_tags):
     result = macos_tags.get_all("/path")
     assert _get_raw_tags.called
@@ -124,7 +124,7 @@ def test_get_all(_get_raw_tags):
 @patch("xattr.removexattr")
 @patch("xattr.listxattr", return_value=["com.apple.FinderInfo"])
 def test_remove_finder_info(listxattr, removexattr):
-    macos_tags._remove_finder_info("/path")
+    macos_tags._api._remove_finder_info("/path")
     assert listxattr.called
     assert listxattr.call_args == call("/path")
     assert removexattr.called
@@ -134,13 +134,13 @@ def test_remove_finder_info(listxattr, removexattr):
 @patch("xattr.removexattr")
 @patch("xattr.listxattr", return_value=[])
 def test_remove_finder_info_if_there_is_no_finder_info(listxattr, removexattr):
-    macos_tags._remove_finder_info("/path")
+    macos_tags._api._remove_finder_info("/path")
     assert listxattr.called
     assert listxattr.call_args == call("/path")
     assert removexattr.called is False
 
 
-@patch("macos_tags._remove_finder_info")
+@patch("macos_tags._api._remove_finder_info")
 @patch("xattr.setxattr")
 def test_set_all_with_tag_objects(setxattr, _remove_finder_info):
     macos_tags.set_all(CLEAN_TAGS, file="/path")
@@ -152,7 +152,7 @@ def test_set_all_with_tag_objects(setxattr, _remove_finder_info):
     )
 
 
-@patch("macos_tags._remove_finder_info")
+@patch("macos_tags._api._remove_finder_info")
 @patch("xattr.setxattr")
 def test_set_all_with_raw_tag_strings(setxattr, _remove_finder_info):
     macos_tags.set_all(RAW_TAGS, file="/path")
@@ -164,15 +164,15 @@ def test_set_all_with_raw_tag_strings(setxattr, _remove_finder_info):
     )
 
 
-@patch("macos_tags.set_all")
+@patch("macos_tags._api.set_all")
 def test_remove_all(set_all):
     macos_tags.remove_all("/path")
     assert set_all.called
     assert set_all.call_args == call([], file="/path")
 
 
-@patch("macos_tags.get_all", return_value=CLEAN_TAGS.copy())
-@patch("macos_tags.set_all")
+@patch("macos_tags._api.get_all", return_value=CLEAN_TAGS.copy())
+@patch("macos_tags._api.set_all")
 def test_add_tag_from_string(set_all, get_all):
     new_tag_name, new_tag_color = "new-tag", 1
     macos_tags.add(f"{new_tag_name}\n{new_tag_color}", file="/path")
@@ -180,8 +180,8 @@ def test_add_tag_from_string(set_all, get_all):
     assert set_all.call_args == call(all_tags, file="/path")
 
 
-@patch("macos_tags.get_all", return_value=CLEAN_TAGS.copy())
-@patch("macos_tags.set_all")
+@patch("macos_tags._api.get_all", return_value=CLEAN_TAGS.copy())
+@patch("macos_tags._api.set_all")
 def test_add_tag_from_tag_object(set_all, get_all):
     new_tag = macos_tags.Tag("new-tag", 1)
     macos_tags.add(new_tag, file="/path")
@@ -189,16 +189,16 @@ def test_add_tag_from_tag_object(set_all, get_all):
     assert set_all.call_args == call(all_tags, file="/path")
 
 
-@patch("macos_tags.get_all", return_value=CLEAN_TAGS.copy())
-@patch("macos_tags.set_all")
+@patch("macos_tags._api.get_all", return_value=CLEAN_TAGS.copy())
+@patch("macos_tags._api.set_all")
 def test_add_do_nothing_if_there_is_a_tag_on_file_with_the_same_name(set_all, get_all):
     new_tag = macos_tags.Tag("tag1", 1)
     macos_tags.add(new_tag, file="/path")
     assert set_all.called is False
 
 
-@patch("macos_tags.get_all", return_value=CLEAN_TAGS.copy())
-@patch("macos_tags.set_all")
+@patch("macos_tags._api.get_all", return_value=CLEAN_TAGS.copy())
+@patch("macos_tags._api.set_all")
 def test_remove_tag_string(set_all, get_all):
     tag, *rest = RAW_TAGS
     rest = [macos_tags.Tag.from_string(t) for t in rest]
@@ -206,8 +206,8 @@ def test_remove_tag_string(set_all, get_all):
     assert set_all.call_args == call(rest, file="/path")
 
 
-@patch("macos_tags.get_all", return_value=CLEAN_TAGS.copy())
-@patch("macos_tags.set_all")
+@patch("macos_tags._api.get_all", return_value=CLEAN_TAGS.copy())
+@patch("macos_tags._api.set_all")
 def test_remove_tag_object(set_all, get_all):
     tag, *rest = CLEAN_TAGS
     macos_tags.remove(tag, file="/path")
