@@ -7,7 +7,7 @@ from enum import Enum, unique
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence, Union
 
-import mdfind
+import mdfind  # type: ignore
 import xattr  # type: ignore
 
 __all__ = [
@@ -32,6 +32,7 @@ _ALL_TAGS_PLIST_PATH = f"{Path.home()}/Library/SyncedPreferences/com.apple.finde
 
 @unique
 class Color(Enum):
+    NONE = 0
     GRAY = 1
     GREEN = 2
     PURPLE = 3
@@ -49,12 +50,10 @@ class Tag:
     """Represents a single tag."""
 
     name: str
-    color: Optional[Color] = field(default=None, compare=False)
+    color: Color = field(default=Color.NONE, compare=False)
 
     def __str__(self) -> str:
-        if self.color:
-            return f"{self.name}\n{self.color}"
-        return self.name
+        return f"{self.name}\n{self.color}"
 
     @classmethod
     def from_string(self, tag: str) -> Tag:
@@ -63,7 +62,7 @@ class Tag:
             name, color = tag.splitlines()
             return Tag(name, Color(int(color)))
         else:
-            return Tag(tag)
+            return Tag(tag, Color.NONE)
 
 
 AnyTag = Union[str, Tag]
@@ -110,7 +109,8 @@ def get_all(file: str) -> List[Tag]:
 def set_all(tags: Sequence[AnyTag], *, file: str) -> None:
     """Add `tags` to the `file` and remove the rest."""
     _remove_finder_info(file)
-    plist = plistlib.dumps([str(tag) for tag in tags])  # type: ignore
+    tags = [str(t) if isinstance(t, Tag) else str(Tag.from_string(t)) for t in tags]
+    plist = plistlib.dumps(tags)  # type: ignore
     xattr.setxattr(file, _XATTR_TAGS, plist)
 
 
@@ -143,6 +143,6 @@ def tags() -> List[Tag]:
         data: Dict["str", Any] = plistlib.load(fp)
         result = []
         for tag in data["values"]["FinderTagDict"]["value"]["FinderTags"]:
-            color = None if tag.get("l") is None else Color(tag["l"])
+            color = Color.NONE if tag.get("l") is None else Color(tag["l"])
             result.append(Tag(tag["n"], color))
         return result
