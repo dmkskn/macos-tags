@@ -20,7 +20,7 @@ Get all tags:
 
 
 >>> macos_tags.tags()
-[Tag(name='design', color=None), ..., Tag(name='python', color=<Color.GREEN: 2>]
+[Tag(name='design', color=<Color.NONE: 0>), ..., Tag(name='python', color=<Color.GREEN: 2>]
 ```
 
 Get files by tag name:
@@ -43,7 +43,7 @@ List the tags on the file:
 >>> path = "/path/to/file"
 
 >>> macos_tags.get_all(path)
-[Tag(name='design', color=None), Tag(name='python', color=<Color.GREEN: 2>]
+[Tag(name='design', color=<Color.NONE: 0>), Tag(name='python', color=<Color.GREEN: 2>]
 ```
 
 Add a tag to file:
@@ -91,14 +91,14 @@ Change all tags in the file:
 
 ```python
 >>> macos_tags.get_all(path)
-[Tag(name='design', color=None), Tag(name='python', color=<Color.GREEN: 2>]
+[Tag(name='design', color=<Color.NONE: 0>), Tag(name='python', color=<Color.GREEN: 2>]
 
 >>> new_tags = [Tag("book"), Tag("programming", Color.BLUE)]
 
 >>> macos_tags.set_all(new_tags, file=path)
 
 >>> macos_tags.get_all(path)
-[Tag(name="book", color=None), Tag("programming", <Color.BLUE: 4>]
+[Tag(name="book", color=<Color.NONE: 0>), Tag("programming", <Color.BLUE: 4>]
 ```
 
 ❤️
