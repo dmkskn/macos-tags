@@ -7,7 +7,7 @@ from enum import Enum, unique
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence, Union
 
-import mdfind  # type: ignore
+import mdfind
 import xattr  # type: ignore
 
 __all__ = [
